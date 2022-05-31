@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "../screens/home/HomeScreen";
 import ScanCamera from "../screens/scan/ScanCamera";
 import DefaultCamera from "../screens/scan/DefaultCamera";
+import SearchInventory from "../screens/inventory/SearchInventory";
 
 export default function Navigation() {
   return (
@@ -42,6 +43,16 @@ function RootNavigator() {
         })}
       />
       {/* CAMERA- - - END */}
+      {/* INVENTORY */}
+      <Stack.Screen
+        name="inventory"
+        component={SearchInventory}
+        options={{
+          title: "Search Inventory",
+          headerShown: true,
+        }}
+      />
+      {/* INVENTORY - - - END */}
     </Stack.Navigator>
   );
 }
@@ -79,6 +90,16 @@ function Camera() {
           }}
         />
         {/* SCAN - - - END */}
+        {/* INVENTORY */}
+        <Stack.Screen
+          name="inventory"
+          component={SearchInventory}
+          options={{
+            title: "Search Inventory",
+            headerShown: true,
+          }}
+        />
+        {/* INVENTORY - - - END */}
       </Stack.Navigator>
     </>
   );
