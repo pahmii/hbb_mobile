@@ -5,7 +5,7 @@ export default class ScanCam extends BaseApi {
     return await this.unsecureFetch(
       `hbb-responsive/scan-barcode/${idInventory}`,
       {
-        method: "PUT",
+        method: "GET",
       }
     );
   };

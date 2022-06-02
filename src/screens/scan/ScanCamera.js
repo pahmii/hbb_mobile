@@ -202,11 +202,12 @@ export default function ScanCamera() {
       placement: "top",
     });
     try {
-      if (data) {
+      const result = await scanInventory.scanInventaris(data);
+      if (result.status === 200) {
         toast.show({
           render: () => {
             return (
-              <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
+              <Box bg="emerald.500" px="2" py="1" rounded="sm">
                 Data Found ✅
               </Box>
             );
@@ -215,9 +216,8 @@ export default function ScanCamera() {
         });
         // navigation.navigate("inventory");
         onOpen();
-
-        const result = await scanInventory.scanInventaris(data);
         setDetailBarcode(result.data[0]);
+        // console.log(result.data[0]);
         setResultData(result);
         setDisplayData(data);
 
@@ -227,7 +227,7 @@ export default function ScanCamera() {
           render: () => {
             return (
               <Box bg="danger.500" px="2" py="1" rounded="sm" mb={10}>
-                UNIDENTIFIED QR CODE
+                {result.message}
               </Box>
             );
           },
@@ -258,6 +258,7 @@ export default function ScanCamera() {
   // no mesin
   // no bpkb
   // no kontrak
+
   // tanggal kontrak
   // harga perolehan
   // bisnis unit
@@ -306,13 +307,6 @@ export default function ScanCamera() {
         name: "No Akuntansi",
         value: detailBarcode?.no_akuntansi ?? "-",
       },
-      // no BAST
-      // tanggal BAST
-      // negara pembuat
-
-      // tahun pembuatan
-      // merk
-      // tipe
       {
         name: "No BAST",
         value: detailBarcode?.no_bast ?? "-",
@@ -331,8 +325,19 @@ export default function ScanCamera() {
       },
       {
         name: "Tipe",
-        value: detailBarcode?.no_akuntansi ?? "-",
+        value: detailBarcode?.type ?? "-",
       },
+      // jenis
+      // model
+      // warna
+      // kapasitas
+      // ukuran
+      // noseri
+      // nopol
+      // no rangka
+      // no mesin
+      // no bpkb
+      // no kontrak
       // {
       //   name: "Action",
       //   value: (
@@ -403,8 +408,8 @@ export default function ScanCamera() {
   const showDisplayData = () => {
     return (
       <Actionsheet
-        style={{ position: "absolute", bottom: 0, height: 500 }}
-        onClose={onClose}
+        style={{ position: "absolute", bottom: 0, height: "100%" }}
+        onClose={reset}
         isOpen={isOpen}
       >
         <Actionsheet.Content>
@@ -415,7 +420,7 @@ export default function ScanCamera() {
             borderBottomWidth={1}
             borderBottomColor={"rgba(0,0,0,0.05)"}
           >
-            <HStack mb={4}>
+            <HStack mb={2}>
               <Text
                 color="gray.600"
                 fontSize="2xl"
@@ -427,8 +432,15 @@ export default function ScanCamera() {
                 Hasil Scan Barcode
               </Text>
             </HStack>
-            {ScanContent()}
           </Box>
+          <ScrollView
+            nestedScrollEnabled={true}
+            style={{ width: "100%", marginBottom: 0 }}
+          >
+            <View pt={2} px={4}>
+              {ScanContent()}
+            </View>
+          </ScrollView>
         </Actionsheet.Content>
       </Actionsheet>
     );
