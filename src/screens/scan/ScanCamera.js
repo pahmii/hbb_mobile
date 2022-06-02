@@ -28,10 +28,14 @@ import { Colors, Dimensions } from "../../assets/styles";
 import { FontAwesome, Entypo, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import { isEmptyArray } from "formik";
+
+import ScanInventory from "../../api/ScanCam";
 
 export default function ScanCamera() {
   const layouts = useWindowDimensions();
   const toast = useToast();
+  const scanInventory = new ScanInventory();
 
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
@@ -51,6 +55,130 @@ export default function ScanCamera() {
     })();
     reset();
   }, []);
+
+  // BIKIN ACCORDION //
+  const Accordion = (props) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const index = props.index;
+    const title = props.title;
+    const children = props.children;
+
+    const toggleOpen = () => {
+      setIsOpen((value) => !value);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setIsLoading(false);
+    };
+
+    return (
+      <>
+        <View pt={index != 0 ? 2 : 0} style={{ width: "100%" }}>
+          <TouchableOpacity
+            onPress={toggleOpen}
+            activeOpacity={0.6}
+            style={{
+              width: "100%",
+              backgroundColor: "#ddd",
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 4,
+            }}
+          >
+            <HStack alignItems={"center"}>
+              <Text color="coolGray.800">{title}</Text>
+              <Entypo
+                name={isOpen ? "chevron-up" : "chevron-down"}
+                size={18}
+                color="coolGray.800"
+                style={{ marginLeft: "auto" }}
+              />
+            </HStack>
+          </TouchableOpacity>
+          <View
+            px={2}
+            style={[styles.list, !isOpen ? styles.hidden : undefined]}
+          >
+            {children}
+          </View>
+        </View>
+      </>
+    );
+  };
+  // ---### END OF ACCORDION ###--- //
+
+  const MasterList = (props) => {
+    const data = props.data;
+
+    return (
+      <SafeAreaView>
+        <FlatList
+          data={data}
+          renderItem={({ item, key }) => (
+            <Box
+              borderBottomWidth="1"
+              _dark={{
+                borderColor: "gray.600",
+              }}
+              borderColor="coolGray.200"
+              py="2"
+            >
+              {item.layout === "vertical" ? (
+                <VStack space={3} justifyContent="space-between" key={key}>
+                  <Text
+                    _dark={{
+                      color: "warmGray.50",
+                    }}
+                    color="coolGray.800"
+                    bold
+                  >
+                    {item.name}
+                  </Text>
+                  {typeof item.value === "string" ? (
+                    <Text>{item.value}</Text>
+                  ) : (
+                    <HStack w={"100%"}>
+                      <View w={"100%"} key={key}>
+                        {item.value}
+                      </View>
+                    </HStack>
+                  )}
+                </VStack>
+              ) : (
+                <HStack
+                  space={3}
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  key={key}
+                >
+                  <Text
+                    _dark={{
+                      color: "warmGray.50",
+                    }}
+                    color="coolGray.800"
+                    bold
+                  >
+                    {item.name}
+                  </Text>
+                  {typeof item.value === "object" ? (
+                    <HStack>
+                      <View ml="auto" key={key}>
+                        {item.value}
+                      </View>
+                    </HStack>
+                  ) : (
+                    <Text>{item.value}</Text>
+                  )}
+                </HStack>
+              )}
+            </Box>
+          )}
+          keyExtractor={(item, index) => item?.id + "" + index}
+          // keyExtractor={(item) => `_key${item.id.toString()}`}
+          // keyExtractor={(item) => item.id}
+        />
+      </SafeAreaView>
+    );
+  };
 
   const reset = () => {
     setQrType(null);
@@ -74,27 +202,32 @@ export default function ScanCamera() {
       placement: "top",
     });
     try {
-      if (data) {
-        setDetailBarcode(data);
-
+      const result = await scanInventory.scanInventaris(data);
+      if (result.status === 200) {
         toast.show({
           render: () => {
             return (
-              <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
+              <Box bg="emerald.500" px="2" py="1" rounded="sm">
                 Data Found ✅
               </Box>
             );
           },
           placement: "top",
-        }),
-          onOpen();
+        });
+        // navigation.navigate("inventory");
+        onOpen();
+        setDetailBarcode(result.data[0]);
+        // console.log(result.data[0]);
+        setResultData(result);
+        setDisplayData(data);
+
         setIsLoading(true);
       } else {
         toast.show({
           render: () => {
             return (
               <Box bg="danger.500" px="2" py="1" rounded="sm" mb={10}>
-                UNIDENTIFIED QR CODE
+                {result.message}
               </Box>
             );
           },
@@ -106,11 +239,177 @@ export default function ScanCamera() {
     }
   };
 
+  // no BAST
+  // tanggal BAST
+  // negara pembuat
+
+  // tahun pembuatan
+  // merk
+  // tipe
+
+  // jenis
+  // model
+  // warna
+  // kapasitas
+  // ukuran
+  // noseri
+  // nopol
+  // no rangka
+  // no mesin
+  // no bpkb
+  // no kontrak
+
+  // tanggal kontrak
+  // harga perolehan
+  // bisnis unit
+  // area
+  // satuan kerja
+  // lokasi
+  // penanggung jawab
+  // kondisi
+  // keterangan
+
+  const ScanContent = () => {
+    const scanResult = [
+      {
+        name: "Jenis Barang",
+        value: detailBarcode?.jenis ?? "-",
+      },
+      {
+        name: "Main Group",
+        value: detailBarcode?.id_main_group ?? "-",
+      },
+      {
+        name: "Sub Group",
+        value: detailBarcode?.id_sub_group ?? "-",
+      },
+      {
+        name: "Tahun Perolehan",
+        value: detailBarcode?.year ?? "-",
+      },
+      {
+        name: "No Urut",
+        value: detailBarcode?.id_barang ?? "-",
+      },
+      {
+        name: "Nama Barang",
+        value: detailBarcode?.name ?? "-",
+      },
+      {
+        name: "Distributor",
+        value: detailBarcode?.distributor ?? "-",
+      },
+      {
+        name: "Jumlah Barang",
+        value: detailBarcode?.jumlah ?? "-",
+      },
+      {
+        name: "No Akuntansi",
+        value: detailBarcode?.no_akuntansi ?? "-",
+      },
+      {
+        name: "No BAST",
+        value: detailBarcode?.no_bast ?? "-",
+      },
+      {
+        name: "Negara Pembuat",
+        value: detailBarcode?.country ?? "-",
+      },
+      {
+        name: "Tahun Pembuatan",
+        value: detailBarcode?.year_made ?? "-",
+      },
+      {
+        name: "Merk",
+        value: detailBarcode?.merk ?? "-",
+      },
+      {
+        name: "Tipe",
+        value: detailBarcode?.type ?? "-",
+      },
+      // jenis
+      // model
+      // warna
+      // kapasitas
+      // ukuran
+      // noseri
+      // nopol
+      // no rangka
+      // no mesin
+      // no bpkb
+      // no kontrak
+      // {
+      //   name: "Action",
+      //   value: (
+      //     <>
+      //       {resultData?.data?.map((item, index) => {
+      //         const title = (
+      //           <View>
+      //             <Text numberOfLines={1} w={"90%"}>
+      //               Action
+      //             </Text>
+      //           </View>
+      //         );
+
+      //         const Body = () => {
+      //           const accordionBodyData = [
+      //             {
+      //               name: "Perbaikan",
+      //               value: (
+      //                 <Button onPress={() => navigation.navigate("inventory")}>
+      //                   Click Me!
+      //                 </Button>
+      //               ),
+      //             },
+      //             {
+      //               name: "Penghapusan",
+      //               value: <Button>Click Me!</Button>,
+      //             },
+      //             {
+      //               name: "Pemindahan",
+      //               value: <Button>Click Me!</Button>,
+      //             },
+      //             {
+      //               name: "Kehilangan",
+      //               value: <Button>Click Me!</Button>,
+      //             },
+      //           ];
+
+      //           return (
+      //             <View pb={3} mb={6}>
+      //               <MasterList data={accordionBodyData} />
+      //             </View>
+      //           );
+      //         };
+
+      //         return (
+      //           <Accordion title={title} index={index}>
+      //             <Body />
+      //           </Accordion>
+      //         );
+      //       })}
+      //     </>
+      //   ),
+      //   layout: "vertical",
+      // },
+      // {
+      //   name: " ",
+      //   value: " ",
+      // },
+      // {
+      //   name: " ",
+      //   value: " ",
+      // },
+    ];
+
+    return <MasterList data={scanResult} />;
+  };
+
   const showDisplayData = () => {
     return (
       <Actionsheet
-        style={{ position: "absolute", bottom: 0, height: 500 }}
-        onClose={onClose}
+        style={{ position: "absolute", bottom: 0, height: "100%" }}
+        onClose={reset}
         isOpen={isOpen}
       >
         <Actionsheet.Content>
@@ -121,18 +420,27 @@ export default function ScanCamera() {
             borderBottomWidth={1}
             borderBottomColor={"rgba(0,0,0,0.05)"}
           >
-            <HStack px={4}>
+            <HStack mb={2}>
               <Text
                 color="gray.600"
                 fontSize="2xl"
+                fontWeight={700}
                 _dark={{
                   color: "gray.300",
                 }}
               >
-                Hasil Scan adalah {detailBarcode}
+                Hasil Scan Barcode
               </Text>
             </HStack>
           </Box>
+          <ScrollView
+            nestedScrollEnabled={true}
+            style={{ width: "100%", marginBottom: 0 }}
+          >
+            <View pt={2} px={4}>
+              {ScanContent()}
+            </View>
+          </ScrollView>
         </Actionsheet.Content>
       </Actionsheet>
     );
