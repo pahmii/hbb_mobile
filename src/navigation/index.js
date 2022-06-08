@@ -8,6 +8,7 @@ import HomeScreen from "../screens/home/HomeScreen";
 import ScanCamera from "../screens/scan/ScanCamera";
 import DefaultCamera from "../screens/scan/DefaultCamera";
 import SearchInventory from "../screens/inventory/SearchInventory";
+import RepairInventory from "../screens/action/Repair";
 
 export default function Navigation() {
   return (
@@ -53,54 +54,16 @@ function RootNavigator() {
         }}
       />
       {/* INVENTORY - - - END */}
-    </Stack.Navigator>
-  );
-}
-
-function Camera() {
-  return (
-    <>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: Colors.secondary5,
-          },
-          headerTintColor: "#FFF",
-          headerTitleStyle: {
-            fontWeight: "normal",
-          },
+      {/* ACTION */}
+      <Stack.Screen
+        name="Repair"
+        component={RepairInventory}
+        options={{
+          title: "Perbaikan Barang",
+          headerBackVisible: false,
         }}
-      >
-        {/* SCAN */}
-        <Stack.Screen
-          name="scan"
-          component={ScanCamera}
-          options={({ route, navigation }) => ({
-            headerTitle: "SCAN QR",
-            headerShown: true,
-            // headerLeft: () => <Text>"BACK"</Text>,
-          })}
-        />
-        <Stack.Screen
-          name="camera"
-          component={DefaultCamera}
-          options={{
-            title: "Ambil Gambar",
-            headerShown: true,
-          }}
-        />
-        {/* SCAN - - - END */}
-        {/* INVENTORY */}
-        <Stack.Screen
-          name="inventory"
-          component={SearchInventory}
-          options={{
-            title: "Search Inventory",
-            headerShown: true,
-          }}
-        />
-        {/* INVENTORY - - - END */}
-      </Stack.Navigator>
-    </>
+      />
+      {/* ACTION - - - END */}
+    </Stack.Navigator>
   );
 }

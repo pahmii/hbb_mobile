@@ -41,7 +41,7 @@ export default function ScanCamera() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [qrType, setQrType] = useState(null);
-  const [displayData, setDisplayData] = useState([]);
+  const [scannedData, setScannedData] = useState();
   const [detailId, setDetailId] = useState(null);
   const [resultData, setResultData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -56,129 +56,129 @@ export default function ScanCamera() {
     reset();
   }, []);
 
-  // BIKIN ACCORDION //
-  const Accordion = (props) => {
-    const [isOpen, setIsOpen] = useState(false);
+  // // BIKIN ACCORDION //
+  // const Accordion = (props) => {
+  //   const [isOpen, setIsOpen] = useState(false);
 
-    const index = props.index;
-    const title = props.title;
-    const children = props.children;
+  //   const index = props.index;
+  //   const title = props.title;
+  //   const children = props.children;
 
-    const toggleOpen = () => {
-      setIsOpen((value) => !value);
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      setIsLoading(false);
-    };
+  //   const toggleOpen = () => {
+  //     setIsOpen((value) => !value);
+  //     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  //     setIsLoading(false);
+  //   };
 
-    return (
-      <>
-        <View pt={index != 0 ? 2 : 0} style={{ width: "100%" }}>
-          <TouchableOpacity
-            onPress={toggleOpen}
-            activeOpacity={0.6}
-            style={{
-              width: "100%",
-              backgroundColor: "#ddd",
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 4,
-            }}
-          >
-            <HStack alignItems={"center"}>
-              <Text color="coolGray.800">{title}</Text>
-              <Entypo
-                name={isOpen ? "chevron-up" : "chevron-down"}
-                size={18}
-                color="coolGray.800"
-                style={{ marginLeft: "auto" }}
-              />
-            </HStack>
-          </TouchableOpacity>
-          <View
-            px={2}
-            style={[styles.list, !isOpen ? styles.hidden : undefined]}
-          >
-            {children}
-          </View>
-        </View>
-      </>
-    );
-  };
-  // ---### END OF ACCORDION ###--- //
+  //   return (
+  //     <>
+  //       <View pt={index != 0 ? 2 : 0} style={{ width: "100%" }}>
+  //         <TouchableOpacity
+  //           onPress={toggleOpen}
+  //           activeOpacity={0.6}
+  //           style={{
+  //             width: "100%",
+  //             backgroundColor: "#ddd",
+  //             paddingHorizontal: 12,
+  //             paddingVertical: 6,
+  //             borderRadius: 4,
+  //           }}
+  //         >
+  //           <HStack alignItems={"center"}>
+  //             <Text color="#2D3545">{title}</Text>
+  //             <Entypo
+  //               name={isOpen ? "chevron-up" : "chevron-down"}
+  //               size={18}
+  //               color="#2D3545"
+  //               style={{ marginLeft: "auto" }}
+  //             />
+  //           </HStack>
+  //         </TouchableOpacity>
+  //         <View
+  //           px={2}
+  //           style={[styles.list, !isOpen ? styles.hidden : undefined]}
+  //         >
+  //           {children}
+  //         </View>
+  //       </View>
+  //     </>
+  //   );
+  // };
+  // // ---### END OF ACCORDION ###--- //
 
-  const MasterList = (props) => {
-    const data = props.data;
+  // const MasterList = (props) => {
+  //   const data = props.data;
 
-    return (
-      <SafeAreaView>
-        <FlatList
-          data={data}
-          renderItem={({ item, key }) => (
-            <Box
-              borderBottomWidth="1"
-              _dark={{
-                borderColor: "gray.600",
-              }}
-              borderColor="coolGray.200"
-              py="2"
-            >
-              {item.layout === "vertical" ? (
-                <VStack space={3} justifyContent="space-between" key={key}>
-                  <Text
-                    _dark={{
-                      color: "warmGray.50",
-                    }}
-                    color="coolGray.800"
-                    bold
-                  >
-                    {item.name}
-                  </Text>
-                  {typeof item.value === "string" ? (
-                    <Text>{item.value}</Text>
-                  ) : (
-                    <HStack w={"100%"}>
-                      <View w={"100%"} key={key}>
-                        {item.value}
-                      </View>
-                    </HStack>
-                  )}
-                </VStack>
-              ) : (
-                <HStack
-                  space={3}
-                  justifyContent="space-between"
-                  alignItems="flex-start"
-                  key={key}
-                >
-                  <Text
-                    _dark={{
-                      color: "warmGray.50",
-                    }}
-                    color="coolGray.800"
-                    bold
-                  >
-                    {item.name}
-                  </Text>
-                  {typeof item.value === "object" ? (
-                    <HStack>
-                      <View ml="auto" key={key}>
-                        {item.value}
-                      </View>
-                    </HStack>
-                  ) : (
-                    <Text>{item.value}</Text>
-                  )}
-                </HStack>
-              )}
-            </Box>
-          )}
-          keyExtractor={(item, index) => item?.id + "" + index}
-          // keyExtractor={(item) => `_key${item.id.toString()}`}
-          // keyExtractor={(item) => item.id}
-        />
-      </SafeAreaView>
-    );
-  };
+  //   return (
+  //     <SafeAreaView>
+  //       <FlatList
+  //         data={data}
+  //         renderItem={({ item, key }) => (
+  //           <Box
+  //             borderBottomWidth="1"
+  //             _dark={{
+  //               borderColor: "gray.600",
+  //             }}
+  //             borderColor="coolGray.200"
+  //             py="2"
+  //           >
+  //             {item.layout === "vertical" ? (
+  //               <VStack space={3} justifyContent="space-between" key={key}>
+  //                 <Text
+  //                   _dark={{
+  //                     color: "warmGray.50",
+  //                   }}
+  //                   color="coolGray.800"
+  //                   bold
+  //                 >
+  //                   {item.name}
+  //                 </Text>
+  //                 {typeof item.value === "string" ? (
+  //                   <Text>{item.value}</Text>
+  //                 ) : (
+  //                   <HStack w={"100%"}>
+  //                     <View w={"100%"} key={key}>
+  //                       {item.value}
+  //                     </View>
+  //                   </HStack>
+  //                 )}
+  //               </VStack>
+  //             ) : (
+  //               <HStack
+  //                 space={3}
+  //                 justifyContent="space-between"
+  //                 alignItems="flex-start"
+  //                 key={key}
+  //               >
+  //                 <Text
+  //                   _dark={{
+  //                     color: "warmGray.50",
+  //                   }}
+  //                   color="coolGray.800"
+  //                   bold
+  //                 >
+  //                   {item.name}
+  //                 </Text>
+  //                 {typeof item.value === "object" ? (
+  //                   <HStack>
+  //                     <View ml="auto" key={key}>
+  //                       {item.value}
+  //                     </View>
+  //                   </HStack>
+  //                 ) : (
+  //                   <Text>{item.value}</Text>
+  //                 )}
+  //               </HStack>
+  //             )}
+  //           </Box>
+  //         )}
+  //         keyExtractor={(item, index) => item?.id + "" + index}
+  //         // keyExtractor={(item) => `_key${item.id.toString()}`}
+  //         // keyExtractor={(item) => item.id}
+  //       />
+  //     </SafeAreaView>
+  //   );
+  // };
 
   const reset = () => {
     setQrType(null);
@@ -195,7 +195,7 @@ export default function ScanCamera() {
       render: () => {
         return (
           <Box bg={Colors.primary5} px="2" py="1" rounded="sm" mb={2}>
-            Verify QR Data
+            Verify QR Data. Please wait...
           </Box>
         );
       },
@@ -219,7 +219,7 @@ export default function ScanCamera() {
         setDetailBarcode(result.data[0]);
         // console.log(result.data[0]);
         setResultData(result);
-        setDisplayData(data);
+        setScannedData(data);
 
         setIsLoading(true);
       } else {
@@ -327,82 +327,142 @@ export default function ScanCamera() {
         name: "Tipe",
         value: detailBarcode?.type ?? "-",
       },
-      // jenis
-      // model
-      // warna
-      // kapasitas
-      // ukuran
-      // noseri
-      // nopol
-      // no rangka
-      // no mesin
-      // no bpkb
-      // no kontrak
-      // {
-      //   name: "Action",
-      //   value: (
-      //     <>
-      //       {resultData?.data?.map((item, index) => {
-      //         const title = (
-      //           <View>
-      //             <Text numberOfLines={1} w={"90%"}>
-      //               Action
-      //             </Text>
-      //           </View>
-      //         );
+      {
+        name: "Action",
+        value: null,
+      },
+      //   <>
+      //     {resultData?.data?.map((item, index) => {
+      //       const title = (
+      //         <View>
+      //           <Text numberOfLines={1} w={"90%"}>
+      //             Action
+      //           </Text>
+      //         </View>
+      //       );
 
-      //         const Body = () => {
-      //           const accordionBodyData = [
-      //             {
-      //               name: "Perbaikan",
-      //               value: (
-      //                 <Button onPress={() => navigation.navigate("inventory")}>
-      //                   Click Me!
-      //                 </Button>
-      //               ),
-      //             },
-      //             {
-      //               name: "Penghapusan",
-      //               value: <Button>Click Me!</Button>,
-      //             },
-      //             {
-      //               name: "Pemindahan",
-      //               value: <Button>Click Me!</Button>,
-      //             },
-      //             {
-      //               name: "Kehilangan",
-      //               value: <Button>Click Me!</Button>,
-      //             },
-      //           ];
-
-      //           return (
-      //             <View pb={3} mb={6}>
-      //               <MasterList data={accordionBodyData} />
-      //             </View>
-      //           );
-      //         };
-
-      //         return (
-      //           <Accordion title={title} index={index}>
-      //             <Body />
-      //           </Accordion>
-      //         );
-      //       })}
-      //     </>
-      //   ),
-      //   layout: "vertical",
-      // },
-      // {
-      //   name: " ",
-      //   value: " ",
-      // },
-      // {
-      //   name: " ",
-      //   value: " ",
-      // },
+      //       const Body = () => {
+      //         const accordionBodyData = [
+      {
+        name: "Perbaikan",
+        value: (
+          <Button
+            onPress={() => {
+              navigation.navigate("Repair", {
+                noInventory: scannedData,
+              });
+              reset();
+            }}
+          >
+            Click Me!
+          </Button>
+        ),
+      },
+      {
+        name: "Penghapusan",
+        value: <Button>Click Me!</Button>,
+      },
+      {
+        name: "Pemindahan",
+        value: <Button>Click Me!</Button>,
+      },
+      {
+        name: "Pemindahan",
+        value: <Button>Click Me!</Button>,
+      },
     ];
 
-    return <MasterList data={scanResult} />;
+    return (
+      <SafeAreaView>
+        <FlatList
+          data={scanResult}
+          renderItem={({ item, key }) => (
+            <Box
+              borderBottomWidth="1"
+              _dark={{
+                borderColor: "gray.600",
+              }}
+              borderColor="coolGray.200"
+              py="2"
+            >
+              {item.layout === "vertical" ? (
+                <VStack space={3} justifyContent="space-between" key={key}>
+                  <Text
+                    _dark={{
+                      color: "warmGray.50",
+                    }}
+                    color="coolGray.800"
+                    bold
+                  >
+                    {item.name}
+                  </Text>
+                  {typeof item.value === "string" ? (
+                    <Text>{item.value}</Text>
+                  ) : (
+                    <HStack w={"100%"}>
+                      <View w={"100%"} key={key}>
+                        {item.value}
+                      </View>
+                    </HStack>
+                  )}
+                </VStack>
+              ) : (
+                <HStack
+                  space={3}
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  key={key}
+                >
+                  <Text
+                    _dark={{
+                      color: "warmGray.50",
+                    }}
+                    color="coolGray.800"
+                    bold
+                  >
+                    {item.name}
+                  </Text>
+                  {typeof item.value === "object" ? (
+                    <HStack>
+                      <View ml="auto" key={key}>
+                        {item.value}
+                      </View>
+                    </HStack>
+                  ) : (
+                    <Text>{item.value}</Text>
+                  )}
+                </HStack>
+              )}
+            </Box>
+          )}
+          keyExtractor={(item, index) => item?.id + "" + index}
+          // keyExtractor={(item) => `_key${item.id.toString()}`}
+          // keyExtractor={(item) => item.id}
+        />
+      </SafeAreaView>
+    );
+
+    //         return (
+    //           <Accordion title={title} index={index}>
+    //             <Body />
+    //           </Accordion>
+    //         );
+    //       })}
+    //     </>
+    //   ),
+    //   layout: "vertical",
+    // },
+    // {
+    //   name: " ",
+    //   value: " ",
+    // },
+    // {
+    //   name: " ",
+    //   value: " ",
+    // },
+    // ];
+
+    // return <MasterList data={scanResult} />;
   };
 
   const showDisplayData = () => {
