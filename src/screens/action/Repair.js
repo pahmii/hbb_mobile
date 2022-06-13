@@ -49,8 +49,8 @@ export default function RepairInventory({ route, navigation }) {
   const validate = (values) => {
     const errors = {};
 
-    if (!values.oldPassword)
-      errors.oldPassword = "Masukan jenis kerusakan yang dialami";
+    if (!values.damageType)
+      errors.damageType = "Masukan jenis kerusakan yang dialami";
     return errors;
   };
 
