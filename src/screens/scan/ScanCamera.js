@@ -360,7 +360,18 @@ export default function ScanCamera() {
       },
       {
         name: "Penghapusan",
-        value: <Button>Click Me!</Button>,
+        value: (
+          <Button
+            onPress={() => {
+              navigation.navigate("Delete", {
+                noInventory: scannedData,
+              });
+              reset();
+            }}
+          >
+            Click Me!
+          </Button>
+        ),
       },
       {
         name: "Pemindahan",
