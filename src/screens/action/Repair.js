@@ -2,32 +2,28 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   NativeBaseProvider,
   VStack,
-  Center,
   View,
   Text,
   useToast,
   FormControl,
   Input,
-  TextArea,
   Button,
   HStack,
   Box,
   ScrollView,
 } from "native-base";
 import { Image } from "react-native";
-import { IndexStyle, Colors, Dimensions } from "../../assets/styles";
+import { IndexStyle, Colors } from "../../assets/styles";
 import { Formik } from "formik";
-import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 
 export default function RepairInventory({ route, navigation }) {
-  const [user, setUser] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pickingImage, setPickingImage] = useState(null);
   const navigations = useNavigation();
   const toast = useToast();
-  const { dataInventory } = route.params;
+  // const { dataInventory } = route.params;
 
   const pickImage = async () => {
     let imageView = await ImagePicker.launchImageLibraryAsync({
@@ -96,9 +92,7 @@ export default function RepairInventory({ route, navigation }) {
         <ScrollView>
           <Formik
             initialValues={{
-              oldPassword: "",
-              newPassword: "",
-              confirmPassword: "",
+              damageType: "",
             }}
             validate={validate}
             onSubmit={(values, { resetForm }) => {

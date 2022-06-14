@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   NativeBaseProvider,
   VStack,
-  Center,
   View,
-  Text,
   useToast,
   FormControl,
-  Input,
   TextArea,
   Button,
   HStack,
@@ -16,12 +13,9 @@ import {
   CheckIcon,
   Select,
 } from "native-base";
-import { Image } from "react-native";
-import { IndexStyle, Colors, Dimensions } from "../../assets/styles";
+import { IndexStyle, Colors } from "../../assets/styles";
 import { Formik } from "formik";
-import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import * as ImagePicker from "expo-image-picker";
 
 // export default function DeleteInventory({ route, navigation }) {
 export default function DeleteInventory() {
@@ -82,10 +76,6 @@ export default function DeleteInventory() {
         "🚀 ~ file: DeleteInventory.js ~ line 115 ~ _handleSubmit ~ result",
         payload
       );
-      // console.log("ress", result);
-      // setIsLoading(false);
-      // //   navigation.navigate("Profile");
-      // // const token = await SecureStore.getItemAsync("accessToken");
     } catch (error) {
       console.log(">>>>>>", error);
       toast.show({
@@ -96,16 +86,6 @@ export default function DeleteInventory() {
       // resetForm();
     }
   };
-
-  //   const getInitialData = async () => {
-  //     let user = await SecureStore.getItemAsync("user");
-
-  //     setUser(JSON.parse(user));
-  //   };
-
-  //   useEffect(() => {
-  //     getInitialData();
-  //   }, []);
 
   return (
     <NativeBaseProvider>

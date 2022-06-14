@@ -10,6 +10,7 @@ import DefaultCamera from "../screens/scan/DefaultCamera";
 import SearchInventory from "../screens/inventory/SearchInventory";
 import RepairInventory from "../screens/action/Repair";
 import DeleteInventory from "../screens/action/Delete";
+import MoveInventory from "../screens/action/Move";
 
 export default function Navigation() {
   return (
@@ -25,14 +26,6 @@ function RootNavigator() {
   return (
     <Stack.Navigator>
       {/* HOME */}
-      <Stack.Screen
-        name="Delete"
-        component={DeleteInventory}
-        options={{
-          title: "Penghapusan Barang",
-          headerBackVisible: false,
-        }}
-      />
       <Stack.Screen
         name="Home"
         component={HomeScreen}
@@ -72,14 +65,22 @@ function RootNavigator() {
           headerBackVisible: false,
         }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Delete"
         component={DeleteInventory}
         options={{
           title: "Penghapusan Barang",
           headerBackVisible: false,
         }}
-      /> */}
+      />
+      <Stack.Screen
+        name="Move"
+        component={MoveInventory}
+        options={{
+          title: "Pemindahan Barang",
+          headerBackVisible: false,
+        }}
+      />
       {/* ACTION - - - END */}
     </Stack.Navigator>
   );
