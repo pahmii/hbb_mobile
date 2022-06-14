@@ -375,7 +375,18 @@ export default function ScanCamera() {
       },
       {
         name: "Pemindahan",
-        value: <Button>Click Me!</Button>,
+        value: (
+          <Button
+            onPress={() => {
+              navigation.navigate("Move", {
+                noInventory: scannedData,
+              });
+              reset();
+            }}
+          >
+            Click Me!
+          </Button>
+        ),
       },
       {
         name: "Pemindahan",
