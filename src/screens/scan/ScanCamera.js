@@ -21,6 +21,7 @@ import {
   View,
   FlatList,
   Row,
+  SectionList,
 } from "native-base";
 import { useToast, Actionsheet, useDisclose } from "native-base";
 
@@ -458,8 +459,6 @@ export default function ScanCamera() {
             </Box>
           )}
           keyExtractor={(item, index) => item?.id + "" + index}
-          // keyExtractor={(item) => `_key${item.id.toString()}`}
-          // keyExtractor={(item) => item.id}
         />
       </SafeAreaView>
     );
