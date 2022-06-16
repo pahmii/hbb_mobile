@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   NativeBaseProvider,
   VStack,
@@ -20,55 +20,79 @@ import { IndexStyle, Colors } from "../../assets/styles";
 import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
 import SearchableDropdown from "react-native-searchable-dropdown";
+import MovingApi from "../../api/Moving";
 
 // export default function DeleteInventory({ route, navigation }) {
-export default function DeleteInventory() {
+export default function MoveInventory() {
   const [user, setUser] = useState([]);
+  const movingApi = new MovingApi();
+
   // const [isLoading, setIsLoading] = useState(false);
-  const [pickingImage, setPickingImage] = useState(null);
+  const [requestData, setRequestData] = useState({});
   let [service, setService] = React.useState("");
   const [selectedItems, setSelectedItems] = useState({});
   const navigations = useNavigation();
   const toast = useToast();
   // const { dataInventory } = route.params;
 
-  var items = [
-    {
-      id: 1,
-      name: "Sonny Rahmawan Abdi",
-      area: "Tangerang",
-      location: "Area Tangerang dan Sekitarnya",
-      unit: "Sales Area Head",
-    },
-    {
-      id: 2,
-      name: "Bonny",
-      area: "Cibinong",
-      location: "Area Cibinong dan Sekitarnya",
-      unit: "Manager",
-    },
-    {
-      id: 3,
-      name: "Budi",
-      area: "Jakarta",
-      location: "Area Jakarta dan Sekitarnya",
-      unit: "Programmer",
-    },
-    {
-      id: 4,
-      name: "Mukti",
-      area: "Malang",
-      location: "Area Malang dan Sekitarnya",
-      unit: "DevOps",
-    },
-    {
-      id: 5,
-      name: "Made",
-      area: "Bali",
-      location: "Area Bali dan Sekitarnya",
-      unit: "Fire Force",
-    },
-  ];
+  const initialData = async () => {
+    try {
+      const result = await movingApi.moveInventory();
+      const rename = result.map((obj) => {
+        obj["name"] = obj["emp_name"]; // Assign new key
+        delete obj["emp_name"]; // Delete old key
+        return obj;
+      });
+      console.log("riname", rename);
+      setRequestData(result);
+    } catch (e) {
+      console.log("🚀 ~ initialData ~ error", e);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    initialData();
+    console.log("tetot", requestData);
+  }, []);
+
+  // var items = [
+  //   {
+  //     id: 1,
+  //     emp_name: "Sonny Rahmawan Abdi",
+  //     area: "Tangerang",
+  //     lokasi: "Area Tangerang dan Sekitarnya",
+  //     satker: "Sales Area Head",
+  //   },
+  //   {
+  //     id: 2,
+  //     emp_name: "Bonny",
+  //     area: "Cibinong",
+  //     lokasi: "Area Cibinong dan Sekitarnya",
+  //     satker: "Manager",
+  //   },
+  //   {
+  //     id: 3,
+  //     emp_name: "Budi",
+  //     area: "Jakarta",
+  //     lokasi: "Area Jakarta dan Sekitarnya",
+  //     satker: "Programmer",
+  //   },
+  //   {
+  //     id: 4,
+  //     emp_name: "Mukti",
+  //     area: "Malang",
+  //     lokasi: "Area Malang dan Sekitarnya",
+  //     satker: "DevOps",
+  //   },
+  //   {
+  //     id: 5,
+  //     emp_name: "Made",
+  //     area: "Bali",
+  //     lokasi: "Area Bali dan Sekitarnya",
+  //     satker: "Fire Force",
+  //   },
+  // ];
 
   // const _handleSubmit = async (values, { resetForm }) => {
   const _handleSubmit = async (values) => {
@@ -125,8 +149,9 @@ export default function DeleteInventory() {
           }}
           itemTextStyle={{ color: "#222" }}
           itemsContainerStyle={{ maxHeight: 140 }}
-          items={items}
-          defaultIndex={6}
+          // items={items}
+          items={requestData}
+          defaultIndex={0}
           resetValue={false}
           textInputProps={{
             placeholder: "Cari Nama Tujuan Pemindahan Barang",
@@ -173,7 +198,7 @@ export default function DeleteInventory() {
           >
             {({ handleBlur, handleChange, handleSubmit, values, errors }) => (
               <VStack space={4} mt="4" py={8} px={4} borderRadius={8}>
-                <FormControl isRequired={true} isInvalid={"username" in errors}>
+                <FormControl isRequired={true} isInvalid={"name" in errors}>
                   <FormControl.Label
                     _text={{
                       color: "coolGray.800",
@@ -184,14 +209,14 @@ export default function DeleteInventory() {
                     Nama Tujuan
                   </FormControl.Label>
                   <Input
-                    onBlur={handleBlur("username")}
+                    onBlur={handleBlur("name")}
                     value={values?.name}
                     fontSize="lg"
                     isDisabled={true}
                     style={{ backgroundColor: "gray", color: "black" }}
                   />
                   <FormControl.ErrorMessage>
-                    {errors.username}
+                    {errors.name}
                   </FormControl.ErrorMessage>
                 </FormControl>
                 <FormControl isRequired={true} isInvalid={"area" in errors}>
@@ -214,7 +239,7 @@ export default function DeleteInventory() {
                     {errors.area}
                   </FormControl.ErrorMessage>
                 </FormControl>
-                <FormControl isRequired={true} isInvalid={"unit" in errors}>
+                <FormControl isRequired={true} isInvalid={"satker" in errors}>
                   <FormControl.Label
                     _text={{
                       color: "coolGray.800",
@@ -225,16 +250,16 @@ export default function DeleteInventory() {
                     Satuan Kerja
                   </FormControl.Label>
                   <Input
-                    value={values.unit}
+                    value={values.satker}
                     fontSize="lg"
                     isDisabled={true}
                     style={{ backgroundColor: "gray", color: "black" }}
                   />
                   <FormControl.ErrorMessage>
-                    {errors.unit}
+                    {errors.satker}
                   </FormControl.ErrorMessage>
                 </FormControl>
-                <FormControl isRequired={true} isInvalid={"location" in errors}>
+                <FormControl isRequired={true} isInvalid={"lokasi" in errors}>
                   <FormControl.Label
                     _text={{
                       color: "coolGray.800",
@@ -245,14 +270,14 @@ export default function DeleteInventory() {
                     Lokasi
                   </FormControl.Label>
                   <Input
-                    onBlur={handleBlur("location")}
-                    value={values.location}
+                    onBlur={handleBlur("lokasi")}
+                    value={values.lokasi}
                     fontSize="lg"
                     isDisabled={true}
                     style={{ backgroundColor: "gray", color: "black" }}
                   />
                   <FormControl.ErrorMessage>
-                    {errors.location}
+                    {errors.lokasi}
                   </FormControl.ErrorMessage>
                 </FormControl>
                 <HStack>
@@ -267,26 +292,26 @@ export default function DeleteInventory() {
                     }}
                     // isLoading={isLoading}
                     // isLoadingText="Waiting response from server..."
-                    // onPress={() => navigations.popToTop()}
-                    onPress={() => {
-                      toast.show({
-                        render: () => {
-                          return (
-                            <Box
-                              bg="emerald.500"
-                              px="2"
-                              py="1"
-                              rounded="sm"
-                              mb={10}
-                            >
-                              DUAR! *sensor*!
-                            </Box>
-                          );
-                        },
-                        placement: "top",
-                      });
-                      console.log("DUAR! *sensor*!");
-                    }}
+                    onPress={() => navigations.popToTop()}
+                    // onPress={() => {
+                    //   toast.show({
+                    //     render: () => {
+                    //       return (
+                    //         <Box
+                    //           bg="emerald.500"
+                    //           px="2"
+                    //           py="1"
+                    //           rounded="sm"
+                    //           mb={10}
+                    //         >
+                    //           DUAR! *sensor*!
+                    //         </Box>
+                    //       );
+                    //     },
+                    //     placement: "top",
+                    //   });
+                    //   console.log("DUAR! *sensor*!");
+                    // }}
                   >
                     Tutup
                   </Button>
