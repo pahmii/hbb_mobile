@@ -20,7 +20,7 @@ import { IndexStyle, Colors } from "../../assets/styles";
 import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
 import SearchableDropdown from "react-native-searchable-dropdown";
-import MovingApi from "../../api/Moving";
+import MovingApi from "../../api/Action";
 
 // export default function DeleteInventory({ route, navigation }) {
 export default function MoveInventory() {

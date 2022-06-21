@@ -17,13 +17,24 @@ import { IndexStyle, Colors } from "../../assets/styles";
 import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
+import ActionApi from "../../api/Action";
 
 export default function RepairInventory({ route, navigation }) {
+  const actionApi = new ActionApi();
   const [isLoading, setIsLoading] = useState(false);
   const [pickingImage, setPickingImage] = useState(null);
   const navigations = useNavigation();
   const toast = useToast();
-  // const { dataInventory } = route.params;
+  const noInventory = route.params.noInventory;
+  // const accessToken = localStorage.getItem("accessToken");
+
+  const getInitialData = async () => {
+    console.log("bisa gila", noInventory);
+  };
+
+  useEffect(() => {
+    getInitialData();
+  }, []);
 
   const pickImage = async () => {
     let imageView = await ImagePicker.launchImageLibraryAsync({
@@ -38,7 +49,7 @@ export default function RepairInventory({ route, navigation }) {
     );
 
     if (!imageView.cancelled) {
-      setPickingImage(imageView.uri);
+      setPickingImage(imageView);
     }
   };
 
@@ -49,42 +60,41 @@ export default function RepairInventory({ route, navigation }) {
       errors.damageType = "Masukan jenis kerusakan yang dialami";
     return errors;
   };
+  1;
 
   const _handleSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
     try {
-      let resetPayload = {
-        password: values.oldPassword,
+      const payload = {
+        no_hbb: noInventory,
+        remark: values.damageType,
+        attachment_file: pickingImage,
+        type: "perbaikan",
       };
-      const result = await authProfile.resetPassword(resetPayload);
+      const result = await actionApi.repairInventory(payload);
       toast.show({
-        title: result?.data?.message,
-        placement: "bottom",
+        render: () => {
+          return (
+            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
+              Data Perbaikan Barang Berhasil Terkirim
+            </Box>
+          );
+        },
+        placement: "top",
       });
-      console.log("ress", result);
       setIsLoading(false);
-      //   navigation.navigate("Profile");
-      // const token = await SecureStore.getItemAsync("accessToken");
+      resetForm();
+      navigations.popToTop();
     } catch (error) {
       console.log(">>>>>>", error);
       toast.show({
-        title: error?.message,
+        title: error,
         placement: "bottom",
       });
       setIsLoading(false);
       // resetForm();
     }
   };
-
-  //   const getInitialData = async () => {
-  //     let user = await SecureStore.getItemAsync("user");
-
-  //     setUser(JSON.parse(user));
-  //   };
-
-  //   useEffect(() => {
-  //     getInitialData();
-  //   }, []);
 
   return (
     <NativeBaseProvider>
@@ -100,7 +110,7 @@ export default function RepairInventory({ route, navigation }) {
             }}
           >
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-              <VStack space={4} mt="4" py={8} px={4} borderRadius={8}>
+              <VStack space={4} py={8} px={4} borderRadius={8}>
                 <FormControl
                   isRequired={true}
                   isInvalid={"damageType" in errors}
@@ -125,99 +135,74 @@ export default function RepairInventory({ route, navigation }) {
                     {errors.damageType}
                   </FormControl.ErrorMessage>
                 </FormControl>
+                {pickingImage && (
+                  <>
+                    <Image
+                      source={{ uri: pickingImage.uri }}
+                      style={{ width: 200, height: 200, marginLeft: 16 }}
+                      key={() => {
+                        Math.random();
+                      }}
+                    />
+                    <Text fontSize="sm" marginLeft={4}>
+                      Upload Image : /...{pickingImage.uri.slice(-16)}{" "}
+                    </Text>
+                  </>
+                )}
+                <VStack space={4} borderRadius={8}>
+                  <Text fontSize="lg" fontWeight={500}>
+                    Attachment Upload
+                  </Text>
+                  <Button
+                    onPress={() => {
+                      pickImage();
+                    }}
+                    mb={2}
+                    _text={{
+                      // color: "white",
+                      fontSize: "xl",
+                    }}
+                  >
+                    Upload Image
+                  </Button>
+                  <HStack>
+                    <Button
+                      mt="2"
+                      ml={4}
+                      mr={32}
+                      width={100}
+                      bg={Colors.mediumTint}
+                      _text={{
+                        // color: "white",
+                        fontSize: "xl",
+                      }}
+                      // isLoading={isLoading}
+                      // isLoadingText="Waiting response from server..."
+                      onPress={() => navigations.popToTop()}
+                    >
+                      Tutup
+                    </Button>
+                    <Button
+                      mt="2"
+                      //   ml={16}
+                      width={100}
+                      bg={Colors.primary7}
+                      _text={{
+                        // color: "white",
+                        fontSize: "xl",
+                      }}
+                      isLoading={isLoading}
+                      // isLoadingText="Waiting response from server..."
+                      // onPress={() => navigation.navigate("Home")}
+                      onPress={handleSubmit}
+                    >
+                      Proses
+                    </Button>
+                  </HStack>
+                </VStack>
               </VStack>
             )}
           </Formik>
-          {pickingImage && (
-            <>
-              <Image
-                source={{ uri: pickingImage }}
-                style={{ width: 200, height: 200, marginLeft: 16 }}
-              />
-              <Text fontSize="sm" marginLeft={4}>
-                Upload Image : /...{pickingImage.slice(-16)}{" "}
-              </Text>
-            </>
-          )}
-          <VStack space={4} px={4} mt="2" borderRadius={8}>
-            <Text fontSize="lg" fontWeight={500}>
-              Attachment Upload
-            </Text>
-            <Button
-              onPress={() => {
-                // changeRequestStatus(requestData?.data?.status);
-                toast.show({
-                  render: () => {
-                    return (
-                      <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
-                        Data ke upload
-                      </Box>
-                    );
-                  },
-                  placement: "top",
-                });
-                pickImage();
-              }}
-              mb={2}
-              _text={{
-                // color: "white",
-                fontSize: "xl",
-              }}
-            >
-              Upload Image
-            </Button>
-            <HStack>
-              <Button
-                mt="2"
-                ml={4}
-                mr={32}
-                width={100}
-                bg={Colors.mediumTint}
-                _text={{
-                  // color: "white",
-                  fontSize: "xl",
-                }}
-                isLoading={isLoading}
-                isLoadingText="Waiting response from server..."
-                onPress={() => navigations.popToTop()}
-              >
-                Tutup
-              </Button>
-              <Button
-                mt="2"
-                //   ml={16}
-                width={100}
-                bg={Colors.primary7}
-                _text={{
-                  // color: "white",
-                  fontSize: "xl",
-                }}
-                isLoading={isLoading}
-                isLoadingText="Waiting response from server..."
-                // onPress={() => navigation.navigate("Home")}
-                onPress={() =>
-                  toast.show({
-                    render: () => {
-                      return (
-                        <Box
-                          bg="emerald.500"
-                          px="2"
-                          py="1"
-                          rounded="sm"
-                          mb={10}
-                        >
-                          Ceritanya Mengirim Data
-                        </Box>
-                      );
-                    },
-                    placement: "top",
-                  })
-                }
-              >
-                Proses
-              </Button>
-            </HStack>
-          </VStack>
         </ScrollView>
       </View>
     </NativeBaseProvider>
