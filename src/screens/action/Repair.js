@@ -82,7 +82,6 @@ export default function RepairInventory({ route, navigation }) {
         },
         placement: "top",
       });
-      console.log("result", JSON.stringify(result));
       setIsLoading(false);
       resetForm();
       navigations.popToTop();
@@ -111,7 +110,7 @@ export default function RepairInventory({ route, navigation }) {
             }}
           >
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-              <VStack space={4} mt="4" py={8} px={4} borderRadius={8}>
+              <VStack space={4} py={8} px={4} borderRadius={8}>
                 <FormControl
                   isRequired={true}
                   isInvalid={"damageType" in errors}
@@ -141,6 +140,9 @@ export default function RepairInventory({ route, navigation }) {
                     <Image
                       source={{ uri: pickingImage.uri }}
                       style={{ width: 200, height: 200, marginLeft: 16 }}
+                      key={() => {
+                        Math.random();
+                      }}
                     />
                     <Text fontSize="sm" marginLeft={4}>
                       Upload Image : /...{pickingImage.uri.slice(-16)}{" "}
@@ -174,8 +176,8 @@ export default function RepairInventory({ route, navigation }) {
                         // color: "white",
                         fontSize: "xl",
                       }}
-                      isLoading={isLoading}
-                      isLoadingText="Waiting response from server..."
+                      // isLoading={isLoading}
+                      // isLoadingText="Waiting response from server..."
                       onPress={() => navigations.popToTop()}
                     >
                       Tutup
@@ -190,7 +192,7 @@ export default function RepairInventory({ route, navigation }) {
                         fontSize: "xl",
                       }}
                       isLoading={isLoading}
-                      isLoadingText="Waiting response from server..."
+                      // isLoadingText="Waiting response from server..."
                       // onPress={() => navigation.navigate("Home")}
                       onPress={handleSubmit}
                     >

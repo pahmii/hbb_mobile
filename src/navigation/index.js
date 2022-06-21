@@ -25,14 +25,14 @@ const Stack = createNativeStackNavigator();
 function RootNavigator() {
   return (
     <Stack.Navigator>
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Delete"
         component={DeleteInventory}
         options={{
           title: "Penghapusan Barang",
           headerBackVisible: false,
         }}
-      />
+      /> */}
       {/* HOME */}
 
       <Stack.Screen
