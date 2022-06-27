@@ -16,75 +16,24 @@ import {
 import { IndexStyle, Colors } from "../../assets/styles";
 import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
+import ActionApi from "../../api/Action";
 
-// export default function DeleteInventory({ route, navigation }) {
-export default function DeleteInventory() {
+export default function DeleteInventory({ route, navigation }) {
   const [user, setUser] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
   const [pickingImage, setPickingImage] = useState(null);
   let [service, setService] = React.useState("");
   const navigations = useNavigation();
   const toast = useToast();
-  // const { dataInventory } = route.params;
-
-  // const pickImage = async () => {
-  //   let imageView = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quantity: 1,
-  //   });
-  //   console.log(
-  //     "🚀 ~ file: DetailRequestBox.js ~ line 77 ~ pickImage ~ result",
-  //     imageView
-  //   );
-
-  //   if (!imageView.cancelled) {
-  //     setPickingImage(imageView.uri);
-  //   }
-  // };
+  const noInventory = route.params.noInventory;
+  const deleteApi = new ActionApi();
 
   const validate = (values) => {
     const errors = {};
 
-    if (!values.reasonDelete)
-      errors.reasonDelete = "Masukan alasan penghapusan";
-    if (!values.description) errors.description = "Masukan deskripsi";
+    if (!values.reason) errors.reason = "Masukan alasan penghapusan";
+    if (!values.remark) errors.remark = "Masukan deskripsi";
     return errors;
-  };
-
-  // const _handleSubmit = async (values, { resetForm }) => {
-  const _handleSubmit = async (values) => {
-    // setIsLoading(true);
-    try {
-      const payload = {
-        reason: values.reasonDelete,
-        description: values.description,
-      };
-      // const result = await authProfile.resetPassword(resetPayload);
-      toast.show({
-        render: () => {
-          return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
-              {JSON.stringify(payload)}
-            </Box>
-          );
-        },
-        placement: "top",
-      });
-      console.log(
-        "🚀 ~ file: DeleteInventory.js ~ line 115 ~ _handleSubmit ~ result",
-        payload
-      );
-    } catch (error) {
-      console.log(">>>>>>", error);
-      toast.show({
-        title: error?.message,
-        placement: "bottom",
-      });
-      // setIsLoading(false);
-      // resetForm();
-    }
   };
 
   return (
@@ -93,20 +42,43 @@ export default function DeleteInventory() {
         <ScrollView>
           <Formik
             initialValues={{
-              reasonDelete: "",
-              description: "",
+              reason: "",
+              remark: "",
             }}
             validate={validate}
-            onSubmit={(values) => {
-              _handleSubmit(values);
+            onSubmit={async (values) => {
+              try {
+                const payload = {
+                  values,
+                  type: "penghapusan",
+                  no_hbb: noInventory,
+                };
+                const result = await deleteApi.deleteInventory(payload);
+                console.log("balikan", JSON.stringify(result));
+                toast.show({
+                  render: () => {
+                    return (
+                      <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
+                        Data Penghapusan Berhasil
+                      </Box>
+                    );
+                  },
+                  placement: "top",
+                });
+              } catch (error) {
+                console.log(">>>>>>", error);
+                toast.show({
+                  title: error?.message,
+                  placement: "bottom",
+                });
+                // setIsLoading(false);
+                // resetForm();
+              }
             }}
           >
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-              <VStack space={4} mt="4" py={8} px={4} borderRadius={8}>
-                <FormControl
-                  isRequired={true}
-                  isInvalid={"reasonDelete" in errors}
-                >
+              <VStack space={4} py={4} px={4} borderRadius={8}>
+                <FormControl isRequired={true} isInvalid={"reason" in errors}>
                   <FormControl.Label
                     _text={{
                       color: "coolGray.800",
@@ -126,9 +98,9 @@ export default function DeleteInventory() {
                     }}
                     mt={1}
                     fontSize="lg"
-                    onBlur={handleBlur("reasonDelete")}
-                    onValueChange={handleChange("reasonDelete")}
-                    selectedValue={values.reasonDelete}
+                    onBlur={handleBlur("reason")}
+                    onValueChange={handleChange("reason")}
+                    selectedValue={values.reason}
                   >
                     <Select.Item label="Rusak" value="rusak" />
                     <Select.Item label="Musnah" value="musnah" />
@@ -150,13 +122,10 @@ export default function DeleteInventory() {
                   </Select>
 
                   <FormControl.ErrorMessage>
-                    {errors.reasonDelete}
+                    {errors.reason}
                   </FormControl.ErrorMessage>
                 </FormControl>
-                <FormControl
-                  isRequired={true}
-                  isInvalid={"description" in errors}
-                >
+                <FormControl isRequired={true} isInvalid={"remark" in errors}>
                   <FormControl.Label
                     _text={{
                       color: "coolGray.800",
@@ -167,14 +136,14 @@ export default function DeleteInventory() {
                     Keterangan
                   </FormControl.Label>
                   <TextArea
-                    onBlur={handleBlur("description")}
+                    onBlur={handleBlur("remark")}
                     placeholder="Masukan Keterangan Kerusakan"
-                    onChangeText={handleChange("description")}
-                    value={values.description}
+                    onChangeText={handleChange("remark")}
+                    value={values.remark}
                     fontSize="lg"
                   />
                   <FormControl.ErrorMessage>
-                    {errors.description}
+                    {errors.remark}
                   </FormControl.ErrorMessage>
                 </FormControl>
                 <HStack>
@@ -185,46 +154,19 @@ export default function DeleteInventory() {
                     width={100}
                     bg={Colors.mediumTint}
                     _text={{
-                      // color: "white",
                       fontSize: "xl",
                     }}
-                    // isLoading={isLoading}
-                    // isLoadingText="Waiting response from server..."
-                    // onPress={() => navigations.popToTop()}
-                    onPress={() => {
-                      toast.show({
-                        render: () => {
-                          return (
-                            <Box
-                              bg="emerald.500"
-                              px="2"
-                              py="1"
-                              rounded="sm"
-                              mb={10}
-                            >
-                              DUAR! *sensor*!
-                            </Box>
-                          );
-                        },
-                        placement: "top",
-                      });
-                      console.log("DUAR! *sensor*!");
-                    }}
+                    onPress={() => navigations.popToTop()}
                   >
                     Tutup
                   </Button>
                   <Button
                     mt="2"
-                    //   ml={16}
                     width={100}
                     bg={Colors.primary7}
                     _text={{
-                      // color: "white",
                       fontSize: "xl",
                     }}
-                    // isLoading={isLoading}
-                    // isLoadingText="Waiting response from server..."
-                    // onPress={() => navigation.navigate("Home")}
                     onPress={handleSubmit}
                   >
                     Proses

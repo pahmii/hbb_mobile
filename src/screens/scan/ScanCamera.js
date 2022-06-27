@@ -389,10 +389,6 @@ export default function ScanCamera() {
           </Button>
         ),
       },
-      {
-        name: "Pemindahan",
-        value: <Button>Click Me!</Button>,
-      },
     ];
 
     return (

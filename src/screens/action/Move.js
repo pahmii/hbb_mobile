@@ -20,12 +20,11 @@ import { IndexStyle, Colors } from "../../assets/styles";
 import { Formik } from "formik";
 import { useNavigation } from "@react-navigation/native";
 import SearchableDropdown from "react-native-searchable-dropdown";
-import MovingApi from "../../api/Action";
+import ActionApi from "../../api/Action";
 
-// export default function DeleteInventory({ route, navigation }) {
-export default function MoveInventory() {
+export default function DeleteInventory({ route, navigation }) {
   const [user, setUser] = useState([]);
-  const movingApi = new MovingApi();
+  const actionApi = new ActionApi();
 
   // const [isLoading, setIsLoading] = useState(false);
   const [requestData, setRequestData] = useState({});
@@ -33,17 +32,16 @@ export default function MoveInventory() {
   const [selectedItems, setSelectedItems] = useState({});
   const navigations = useNavigation();
   const toast = useToast();
-  // const { dataInventory } = route.params;
+  const noInventory = route.params.noInventory;
 
   const initialData = async () => {
     try {
-      const result = await movingApi.moveInventory();
+      const result = await actionApi.findToInventory();
       const rename = result.map((obj) => {
         obj["name"] = obj["emp_name"]; // Assign new key
         delete obj["emp_name"]; // Delete old key
         return obj;
       });
-      console.log("riname", rename);
       setRequestData(result);
     } catch (e) {
       console.log("🚀 ~ initialData ~ error", e);
@@ -53,77 +51,8 @@ export default function MoveInventory() {
 
   useEffect(() => {
     initialData();
-    console.log("tetot", requestData);
+    // console.log("tetot", requestData);
   }, []);
-
-  // var items = [
-  //   {
-  //     id: 1,
-  //     emp_name: "Sonny Rahmawan Abdi",
-  //     area: "Tangerang",
-  //     lokasi: "Area Tangerang dan Sekitarnya",
-  //     satker: "Sales Area Head",
-  //   },
-  //   {
-  //     id: 2,
-  //     emp_name: "Bonny",
-  //     area: "Cibinong",
-  //     lokasi: "Area Cibinong dan Sekitarnya",
-  //     satker: "Manager",
-  //   },
-  //   {
-  //     id: 3,
-  //     emp_name: "Budi",
-  //     area: "Jakarta",
-  //     lokasi: "Area Jakarta dan Sekitarnya",
-  //     satker: "Programmer",
-  //   },
-  //   {
-  //     id: 4,
-  //     emp_name: "Mukti",
-  //     area: "Malang",
-  //     lokasi: "Area Malang dan Sekitarnya",
-  //     satker: "DevOps",
-  //   },
-  //   {
-  //     id: 5,
-  //     emp_name: "Made",
-  //     area: "Bali",
-  //     lokasi: "Area Bali dan Sekitarnya",
-  //     satker: "Fire Force",
-  //   },
-  // ];
-
-  // const _handleSubmit = async (values, { resetForm }) => {
-  const _handleSubmit = async (values) => {
-    // setIsLoading(true);
-    try {
-      const payload = {
-        selectedItems,
-      };
-      // const result = await authProfile.resetPassword(resetPayload);
-      toast.show({
-        render: () => {
-          return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
-              {JSON.stringify(payload)}
-            </Box>
-          );
-        },
-        placement: "top",
-      });
-      console.log(
-        "🚀 ~ file: DeleteInventory.js ~ line 115 ~ _handleSubmit ~ result",
-        payload
-      );
-    } catch (error) {
-      console.log(">>>>>>", error);
-      toast.show({
-        title: error?.message,
-        placement: "bottom",
-      });
-    }
-  };
 
   return (
     <NativeBaseProvider>
@@ -174,14 +103,20 @@ export default function MoveInventory() {
           <Formik
             enableReinitialize={true}
             initialValues={selectedItems}
-            onSubmit={(values) => {
+            onSubmit={async (values) => {
               try {
-                const payload = values;
+                const payload = {
+                  values,
+                  type: "pemindahan",
+                  no_hbb: noInventory,
+                };
+                const result = await actionApi.movingInventory(payload);
+                console.log("balikan", JSON.stringify(result));
                 toast.show({
                   render: () => {
                     return (
                       <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
-                        {JSON.stringify(payload)}
+                        Data Pemindahan Berhasil Terkirim Ke {values.name}
                       </Box>
                     );
                   },
@@ -290,43 +225,17 @@ export default function MoveInventory() {
                     _text={{
                       fontSize: "xl",
                     }}
-                    // isLoading={isLoading}
-                    // isLoadingText="Waiting response from server..."
                     onPress={() => navigations.popToTop()}
-                    // onPress={() => {
-                    //   toast.show({
-                    //     render: () => {
-                    //       return (
-                    //         <Box
-                    //           bg="emerald.500"
-                    //           px="2"
-                    //           py="1"
-                    //           rounded="sm"
-                    //           mb={10}
-                    //         >
-                    //           DUAR! *sensor*!
-                    //         </Box>
-                    //       );
-                    //     },
-                    //     placement: "top",
-                    //   });
-                    //   console.log("DUAR! *sensor*!");
-                    // }}
                   >
                     Tutup
                   </Button>
                   <Button
                     mt="2"
-                    //   ml={16}
                     width={100}
                     bg={Colors.primary7}
                     _text={{
-                      // color: "white",
                       fontSize: "xl",
                     }}
-                    // isLoading={isLoading}
-                    // isLoadingText="Waiting response from server..."
-                    // onPress={() => navigation.navigate("Home")}
                     onPress={handleSubmit}
                   >
                     Proses
