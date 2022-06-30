@@ -19,10 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import ActionApi from "../../api/Action";
 
 export default function DeleteInventory({ route, navigation }) {
-  const [user, setUser] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  const [pickingImage, setPickingImage] = useState(null);
-  let [service, setService] = React.useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigations = useNavigation();
   const toast = useToast();
   const noInventory = route.params.noInventory;
@@ -47,6 +44,7 @@ export default function DeleteInventory({ route, navigation }) {
             }}
             validate={validate}
             onSubmit={async (values) => {
+              setIsLoading(true);
               try {
                 const payload = {
                   values,
@@ -65,13 +63,16 @@ export default function DeleteInventory({ route, navigation }) {
                   },
                   placement: "top",
                 });
+                setIsLoading(false);
+                resetForm();
+                navigations.popToTop();
               } catch (error) {
                 console.log(">>>>>>", error);
                 toast.show({
                   title: error?.message,
                   placement: "bottom",
                 });
-                // setIsLoading(false);
+                setIsLoading(false);
                 // resetForm();
               }
             }}
@@ -167,6 +168,7 @@ export default function DeleteInventory({ route, navigation }) {
                     _text={{
                       fontSize: "xl",
                     }}
+                    isLoading={isLoading}
                     onPress={handleSubmit}
                   >
                     Proses

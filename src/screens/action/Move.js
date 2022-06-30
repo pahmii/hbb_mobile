@@ -2,19 +2,14 @@ import React, { useState, useEffect } from "react";
 import {
   NativeBaseProvider,
   VStack,
-  Center,
   View,
-  Text,
   useToast,
   FormControl,
   Input,
-  TextArea,
   Button,
   HStack,
   Box,
   ScrollView,
-  CheckIcon,
-  Select,
 } from "native-base";
 import { IndexStyle, Colors } from "../../assets/styles";
 import { Formik } from "formik";
@@ -23,12 +18,10 @@ import SearchableDropdown from "react-native-searchable-dropdown";
 import ActionApi from "../../api/Action";
 
 export default function DeleteInventory({ route, navigation }) {
-  const [user, setUser] = useState([]);
   const actionApi = new ActionApi();
 
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [requestData, setRequestData] = useState({});
-  let [service, setService] = React.useState("");
   const [selectedItems, setSelectedItems] = useState({});
   const navigations = useNavigation();
   const toast = useToast();
@@ -51,7 +44,7 @@ export default function DeleteInventory({ route, navigation }) {
 
   useEffect(() => {
     initialData();
-    // console.log("tetot", requestData);
+    setIsLoading(false);
   }, []);
 
   return (
@@ -104,6 +97,7 @@ export default function DeleteInventory({ route, navigation }) {
             enableReinitialize={true}
             initialValues={selectedItems}
             onSubmit={async (values) => {
+              setIsLoading(true);
               try {
                 const payload = {
                   values,
@@ -122,12 +116,16 @@ export default function DeleteInventory({ route, navigation }) {
                   },
                   placement: "top",
                 });
+                setIsLoading(false);
+                resetForm();
+                navigations.popToTop();
               } catch (error) {
                 console.log(">>>>>>", error);
                 toast.show({
                   title: error?.message,
                   placement: "bottom",
                 });
+                setIsLoading(false);
               }
             }}
           >
@@ -236,6 +234,7 @@ export default function DeleteInventory({ route, navigation }) {
                     _text={{
                       fontSize: "xl",
                     }}
+                    isLoading={isLoading}
                     onPress={handleSubmit}
                   >
                     Proses
