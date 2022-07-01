@@ -7,9 +7,9 @@ import { useNavigation } from "@react-navigation/native";
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [scanButton, setScanButton] = useState(true);
-  const [isReady, setIsReady] = useState(false);
+  const [NIPG, setNIPG] = useState("");
 
-  const CHECK_COOKIE = `ReactNativeWebView.postMessage("Cookie: " + document.getElementsByName('viewport')[0].getAttribute("content")
+  const CHECK_COOKIE = `ReactNativeWebView.postMessage("Cookie: " + document.getElementsByClassName("sb-sidenav-footer")[0].innerText.slice(14)
   );true;`;
 
   let webViewRef = createRef();
@@ -35,10 +35,13 @@ export default function HomeScreen() {
 
   const onMessage = (e) => {
     const { data } = e.nativeEvent;
+    const dataSet = data.slice(8);
+    setNIPG(dataSet);
 
     if (data.includes("Cookie:")) {
       // process the cookies
       console.log("kukis", data);
+      console.log("kukisSet", dataSet);
     }
   };
 
@@ -62,7 +65,11 @@ export default function HomeScreen() {
         }}
       >
         <Button
-          onPress={() => navigation.navigate("Camera")}
+          onPress={() =>
+            navigation.navigate("Camera", {
+              nipg: NIPG,
+            })
+          }
           style={{ height: 48 }}
         >
           <Text style={{ color: "#fff", fontSize: 20, fontWeight: "600" }}>
