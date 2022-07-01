@@ -26,15 +26,6 @@ export default function RepairInventory({ route, navigation }) {
   const navigations = useNavigation();
   const toast = useToast();
   const noInventory = route.params.noInventory;
-  // const accessToken = localStorage.getItem("accessToken");
-
-  const getInitialData = async () => {
-    console.log("bisa gila", noInventory);
-  };
-
-  useEffect(() => {
-    getInitialData();
-  }, []);
 
   const pickImage = async () => {
     let imageView = await ImagePicker.launchImageLibraryAsync({
@@ -92,7 +83,6 @@ export default function RepairInventory({ route, navigation }) {
         placement: "bottom",
       });
       setIsLoading(false);
-      // resetForm();
     }
   };
 
@@ -173,7 +163,6 @@ export default function RepairInventory({ route, navigation }) {
                       width={100}
                       bg={Colors.mediumTint}
                       _text={{
-                        // color: "white",
                         fontSize: "xl",
                       }}
                       // isLoading={isLoading}

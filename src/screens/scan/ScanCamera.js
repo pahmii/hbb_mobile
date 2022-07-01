@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
-  TouchableOpacity,
   Image,
-  ActivityIndicator,
-  LayoutAnimation,
   SafeAreaView,
   useWindowDimensions,
 } from "react-native";
@@ -14,22 +11,15 @@ import {
   Text,
   ScrollView,
   HStack,
-  FormControl,
-  Input,
-  Pressable,
   VStack,
   View,
   FlatList,
-  Row,
-  SectionList,
 } from "native-base";
 import { useToast, Actionsheet, useDisclose } from "native-base";
 
 import { Colors, Dimensions } from "../../assets/styles";
-import { FontAwesome, Entypo, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { isEmptyArray } from "formik";
 
 import ScanInventory from "../../api/ScanCam";
 
@@ -41,9 +31,8 @@ export default function ScanCamera() {
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [qrType, setQrType] = useState(null);
   const [scannedData, setScannedData] = useState();
-  const [detailId, setDetailId] = useState(null);
+  const [detailId] = useState(null);
   const [resultData, setResultData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [detailBarcode, setDetailBarcode] = useState(null);
@@ -57,134 +46,8 @@ export default function ScanCamera() {
     reset();
   }, []);
 
-  // // BIKIN ACCORDION //
-  // const Accordion = (props) => {
-  //   const [isOpen, setIsOpen] = useState(false);
-
-  //   const index = props.index;
-  //   const title = props.title;
-  //   const children = props.children;
-
-  //   const toggleOpen = () => {
-  //     setIsOpen((value) => !value);
-  //     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-  //     setIsLoading(false);
-  //   };
-
-  //   return (
-  //     <>
-  //       <View pt={index != 0 ? 2 : 0} style={{ width: "100%" }}>
-  //         <TouchableOpacity
-  //           onPress={toggleOpen}
-  //           activeOpacity={0.6}
-  //           style={{
-  //             width: "100%",
-  //             backgroundColor: "#ddd",
-  //             paddingHorizontal: 12,
-  //             paddingVertical: 6,
-  //             borderRadius: 4,
-  //           }}
-  //         >
-  //           <HStack alignItems={"center"}>
-  //             <Text color="#2D3545">{title}</Text>
-  //             <Entypo
-  //               name={isOpen ? "chevron-up" : "chevron-down"}
-  //               size={18}
-  //               color="#2D3545"
-  //               style={{ marginLeft: "auto" }}
-  //             />
-  //           </HStack>
-  //         </TouchableOpacity>
-  //         <View
-  //           px={2}
-  //           style={[styles.list, !isOpen ? styles.hidden : undefined]}
-  //         >
-  //           {children}
-  //         </View>
-  //       </View>
-  //     </>
-  //   );
-  // };
-  // // ---### END OF ACCORDION ###--- //
-
-  // const MasterList = (props) => {
-  //   const data = props.data;
-
-  //   return (
-  //     <SafeAreaView>
-  //       <FlatList
-  //         data={data}
-  //         renderItem={({ item, key }) => (
-  //           <Box
-  //             borderBottomWidth="1"
-  //             _dark={{
-  //               borderColor: "gray.600",
-  //             }}
-  //             borderColor="coolGray.200"
-  //             py="2"
-  //           >
-  //             {item.layout === "vertical" ? (
-  //               <VStack space={3} justifyContent="space-between" key={key}>
-  //                 <Text
-  //                   _dark={{
-  //                     color: "warmGray.50",
-  //                   }}
-  //                   color="coolGray.800"
-  //                   bold
-  //                 >
-  //                   {item.name}
-  //                 </Text>
-  //                 {typeof item.value === "string" ? (
-  //                   <Text>{item.value}</Text>
-  //                 ) : (
-  //                   <HStack w={"100%"}>
-  //                     <View w={"100%"} key={key}>
-  //                       {item.value}
-  //                     </View>
-  //                   </HStack>
-  //                 )}
-  //               </VStack>
-  //             ) : (
-  //               <HStack
-  //                 space={3}
-  //                 justifyContent="space-between"
-  //                 alignItems="flex-start"
-  //                 key={key}
-  //               >
-  //                 <Text
-  //                   _dark={{
-  //                     color: "warmGray.50",
-  //                   }}
-  //                   color="coolGray.800"
-  //                   bold
-  //                 >
-  //                   {item.name}
-  //                 </Text>
-  //                 {typeof item.value === "object" ? (
-  //                   <HStack>
-  //                     <View ml="auto" key={key}>
-  //                       {item.value}
-  //                     </View>
-  //                   </HStack>
-  //                 ) : (
-  //                   <Text>{item.value}</Text>
-  //                 )}
-  //               </HStack>
-  //             )}
-  //           </Box>
-  //         )}
-  //         keyExtractor={(item, index) => item?.id + "" + index}
-  //         // keyExtractor={(item) => `_key${item.id.toString()}`}
-  //         // keyExtractor={(item) => item.id}
-  //       />
-  //     </SafeAreaView>
-  //   );
-  // };
-
   const reset = () => {
-    setQrType(null);
     setScanned(false);
-    setDetailId(null);
     onClose();
   };
 
@@ -215,13 +78,10 @@ export default function ScanCamera() {
           },
           placement: "top",
         });
-        // navigation.navigate("inventory");
         onOpen();
         setDetailBarcode(result.data[0]);
-        // console.log(result.data[0]);
         setResultData(result);
         setScannedData(data);
-
         setIsLoading(true);
       } else {
         toast.show({
@@ -239,36 +99,6 @@ export default function ScanCamera() {
       console.log(error);
     }
   };
-
-  // no BAST
-  // tanggal BAST
-  // negara pembuat
-
-  // tahun pembuatan
-  // merk
-  // tipe
-
-  // jenis
-  // model
-  // warna
-  // kapasitas
-  // ukuran
-  // noseri
-  // nopol
-  // no rangka
-  // no mesin
-  // no bpkb
-  // no kontrak
-
-  // tanggal kontrak
-  // harga perolehan
-  // bisnis unit
-  // area
-  // satuan kerja
-  // lokasi
-  // penanggung jawab
-  // kondisi
-  // keterangan
 
   const ScanContent = () => {
     const scanResult = [
@@ -332,18 +162,6 @@ export default function ScanCamera() {
         name: "Action",
         value: null,
       },
-      //   <>
-      //     {resultData?.data?.map((item, index) => {
-      //       const title = (
-      //         <View>
-      //           <Text numberOfLines={1} w={"90%"}>
-      //             Action
-      //           </Text>
-      //         </View>
-      //       );
-
-      //       const Body = () => {
-      //         const accordionBodyData = [
       {
         name: "Perbaikan",
         value: (
@@ -458,28 +276,6 @@ export default function ScanCamera() {
         />
       </SafeAreaView>
     );
-
-    //         return (
-    //           <Accordion title={title} index={index}>
-    //             <Body />
-    //           </Accordion>
-    //         );
-    //       })}
-    //     </>
-    //   ),
-    //   layout: "vertical",
-    // },
-    // {
-    //   name: " ",
-    //   value: " ",
-    // },
-    // {
-    //   name: " ",
-    //   value: " ",
-    // },
-    // ];
-
-    // return <MasterList data={scanResult} />;
   };
 
   const showDisplayData = () => {
@@ -540,7 +336,6 @@ export default function ScanCamera() {
           <Button
             style={{
               position: "absolute",
-              // left: "20%",
               bottom: 35,
               width: 200,
               height: 48,

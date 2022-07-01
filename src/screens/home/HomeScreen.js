@@ -1,43 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, createRef } from "react";
 import { NativeBaseProvider, Button, Text } from "native-base";
 import { Alert, View } from "react-native";
-import WebView from "react-native-webview";
+import { WebView, WebViewNavigation } from "react-native-webview";
 import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const [hiddenButton, setHiddenButton] = useState(true);
+  const [scanButton, setScanButton] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
-  // const injectedJS = setTimeout(function () {
-  //   window.alert("hi");
-  // }, 2000);
-  // true;
+  const CHECK_COOKIE = `ReactNativeWebView.postMessage("Cookie: " + document.getElementsByName('viewport')[0].getAttribute("content")
+  );true;`;
+
+  let webViewRef = createRef();
+
+  const onNavigationStateChange = (navigationState) => {
+    const { url } = navigationState;
+
+    // if (!url) return;
+    if (
+      url === "https://hbb.pgnmas.co.id/hbb-responsive/" ||
+      url.includes("https://hbb.pgnmas.co.id/hbb-responsive/login") ||
+      url.includes("https://hbb.pgnmas.co.id/hbb-responsive/logout")
+    ) {
+      setScanButton(true);
+    } else {
+      setScanButton(false);
+    }
+
+    if (webViewRef.current) {
+      webViewRef.current.injectJavaScript(CHECK_COOKIE);
+    }
+  };
+
+  const onMessage = (e) => {
+    const { data } = e.nativeEvent;
+
+    if (data.includes("Cookie:")) {
+      // process the cookies
+      console.log("kukis", data);
+    }
+  };
 
   return (
     <NativeBaseProvider>
       <WebView
+        ref={webViewRef}
+        cacheEnabled={false}
         source={{
           uri: "https://hbb.pgnmas.co.id/hbb-responsive",
         }}
-        onNavigationStateChange={(newNavState) => {
-          const { url } = newNavState;
-          // if (!url) return;
-          if (
-            url === "https://hbb.pgnmas.co.id/hbb-responsive/" ||
-            url.includes("https://hbb.pgnmas.co.id/hbb-responsive/login") ||
-            url.includes("https://hbb.pgnmas.co.id/hbb-responsive/logout")
-          ) {
-            setHiddenButton(true);
-          } else {
-            setHiddenButton(false);
-          }
-        }}
+        onNavigationStateChange={onNavigationStateChange}
+        onMessage={onMessage}
         style={{ width: "100%", height: "100%", marginTop: 36 }}
       />
-
       <View
         style={{
-          display: hiddenButton === true ? "none" : "flex",
+          display: scanButton === true ? "none" : "flex",
           paddingHorizontal: 16,
           paddingVertical: 8,
         }}
