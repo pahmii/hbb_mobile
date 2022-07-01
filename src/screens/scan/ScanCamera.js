@@ -23,10 +23,11 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 
 import ScanInventory from "../../api/ScanCam";
 
-export default function ScanCamera() {
+export default function ScanCamera({ route, navigasi }) {
   const layouts = useWindowDimensions();
   const toast = useToast();
   const scanInventory = new ScanInventory();
+  const noNIPG = route.params.nipg;
 
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
@@ -102,6 +103,10 @@ export default function ScanCamera() {
 
   const ScanContent = () => {
     const scanResult = [
+      {
+        name: "No NIPG",
+        value: noNIPG ?? "-",
+      },
       {
         name: "Jenis Barang",
         value: detailBarcode?.jenis ?? "-",
