@@ -174,6 +174,7 @@ export default function ScanCamera({ route, navigasi }) {
             onPress={() => {
               navigation.navigate("Repair", {
                 noInventory: scannedData,
+                nipgUser: noNIPG,
               });
               reset();
             }}
@@ -189,6 +190,7 @@ export default function ScanCamera({ route, navigasi }) {
             onPress={() => {
               navigation.navigate("Delete", {
                 noInventory: scannedData,
+                nipgUser: noNIPG,
               });
               reset();
             }}
@@ -204,6 +206,7 @@ export default function ScanCamera({ route, navigasi }) {
             onPress={() => {
               navigation.navigate("Move", {
                 noInventory: scannedData,
+                nipgUser: noNIPG,
               });
               reset();
             }}
