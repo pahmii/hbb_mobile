@@ -26,6 +26,7 @@ export default function RepairInventory({ route, navigation }) {
   const navigations = useNavigation();
   const toast = useToast();
   const noInventory = route.params.noInventory;
+  const noNIPG = route.params.nipgUser;
 
   const pickImage = async () => {
     let imageView = await ImagePicker.launchImageLibraryAsync({
@@ -61,21 +62,49 @@ export default function RepairInventory({ route, navigation }) {
         remark: values.damageType,
         attachment_file: pickingImage,
         type: "perbaikan",
+        nipgUser: noNIPG,
       };
       const result = await actionApi.repairInventory(payload);
-      toast.show({
-        render: () => {
-          return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
-              Data Perbaikan Barang Berhasil Terkirim
-            </Box>
-          );
-        },
-        placement: "top",
-      });
-      setIsLoading(false);
-      resetForm();
-      navigations.popToTop();
+      const messageRes = JSON.parse(result);
+
+      if (messageRes.status === 200) {
+        toast.show({
+          render: () => {
+            return (
+              <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
+                Permintaan Perbaikan Barang Berhasil
+              </Box>
+            );
+          },
+          placement: "top",
+        });
+        setIsLoading(false);
+        resetForm();
+        navigations.popToTop();
+      } else {
+        toast.show({
+          render: () => {
+            return (
+              <Box
+                bg="danger.100"
+                px="4"
+                py="2"
+                rounded="sm"
+                mb={10}
+                _text={{
+                  color: "#cf1322",
+                }}
+              >
+                {messageRes.message}
+              </Box>
+            );
+          },
+          placement: "top",
+        });
+        setIsLoading(false);
+        resetForm();
+        // navigations.popToTop();
+      }
     } catch (error) {
       console.log(">>>>>>", error);
       toast.show({

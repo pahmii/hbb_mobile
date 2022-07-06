@@ -15,6 +15,8 @@ const debug = (...params) => {
 
 export default class BaseApi {
   host = "https://hbb.pgnmas.co.id";
+  // host = "http://103.93.57.36:9000";
+
   /*Env === "local" ?
      "https://" + manifest.debuggerHost.split(`:`).shift().concat(`:8000`) :
      */

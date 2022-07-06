@@ -26,6 +26,7 @@ export default function DeleteInventory({ route, navigation }) {
   const navigations = useNavigation();
   const toast = useToast();
   const noInventory = route.params.noInventory;
+  const noNIPG = route.params.nipgUser;
 
   const initialData = async () => {
     try {
@@ -96,29 +97,61 @@ export default function DeleteInventory({ route, navigation }) {
           <Formik
             enableReinitialize={true}
             initialValues={selectedItems}
-            onSubmit={async (values) => {
+            onSubmit={async (values, { resetForm }) => {
               setIsLoading(true);
               try {
                 const payload = {
                   values,
                   type: "pemindahan",
                   no_hbb: noInventory,
+                  nipgUser: noNIPG,
                 };
                 const result = await actionApi.movingInventory(payload);
-                console.log("balikan", JSON.stringify(result));
-                toast.show({
-                  render: () => {
-                    return (
-                      <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={10}>
-                        Data Pemindahan Berhasil Terkirim Ke {values.name}
-                      </Box>
-                    );
-                  },
-                  placement: "top",
-                });
-                setIsLoading(false);
-                resetForm();
-                navigations.popToTop();
+                const messageRes = JSON.parse(result);
+                if (messageRes.status === 200) {
+                  toast.show({
+                    render: () => {
+                      return (
+                        <Box
+                          bg="emerald.500"
+                          px="2"
+                          py="1"
+                          rounded="sm"
+                          mb={10}
+                        >
+                          Permintaan Pemindahan Barang Berhasil
+                        </Box>
+                      );
+                    },
+                    placement: "top",
+                  });
+                  setIsLoading(false);
+                  resetForm();
+                  navigations.popToTop();
+                } else {
+                  toast.show({
+                    render: () => {
+                      return (
+                        <Box
+                          bg="danger.100"
+                          px="4"
+                          py="2"
+                          rounded="sm"
+                          mb={10}
+                          _text={{
+                            color: "#cf1322",
+                          }}
+                        >
+                          {messageRes.message}
+                        </Box>
+                      );
+                    },
+                    placement: "top",
+                  });
+                  setIsLoading(false);
+                  resetForm();
+                  // navigations.popToTop();
+                }
               } catch (error) {
                 console.log(">>>>>>", error);
                 toast.show({
@@ -129,7 +162,14 @@ export default function DeleteInventory({ route, navigation }) {
               }
             }}
           >
-            {({ handleBlur, handleChange, handleSubmit, values, errors }) => (
+            {({
+              handleBlur,
+              handleChange,
+              handleSubmit,
+              resetForm,
+              values,
+              errors,
+            }) => (
               <VStack space={4} mt="4" py={8} px={4} borderRadius={8}>
                 <FormControl isRequired={true} isInvalid={"name" in errors}>
                   <FormControl.Label
